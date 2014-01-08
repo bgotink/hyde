@@ -1,0 +1,68 @@
+#!/usr/bin/env ruby
+STDOUT.sync = true
+
+$:.unshift File.join(File.dirname(__FILE__), *%w{ .. lib })
+
+require 'commander/import'
+require 'hyde'
+
+program :name, 'Hyde'
+program :version, Hyde::VERSION
+program :description, 'A user-friendly front-end for Jekyll'
+
+default_command :default
+
+global_option '-s', '--source [DIR]', 'Source directory (defaults to ./_source)'
+global_option '-j', '--jekyll [DIR]', 'Jekyll input directory (defaults to ./_jekyll)'
+global_option '-k', '--jekyll-out [DIR]', 'Jekyll intermediate directory (defaults to ./_jekyll-out)'
+global_option '-d', '--destination [DIR]', 'Output directory (defaults to ./_site)'
+
+def add_build_options(c)
+  c.option '--config CONFIG_FILE[,CONFIG_FILE2,...]', Array, 'Custom configuration file'
+  c.option '--keep', 'Keep intermediate jekyll files'
+  c.option '-w', '--watch', 'Watch for changes and rebuild'
+  c.option '-V', '--verbose', 'Print verbose output.'
+end
+
+command :default do |c|
+  c.action do |args, options|
+    if args.empty?
+      command(:help).run
+    else
+      Hyde.logger.abort_with "Invalid command. Use --help for more information"
+    end
+  end
+end
+
+command :build do |c|
+  c.syntax = 'hyde build [options]'
+  c.description = 'build your site'
+  
+  add_build_options(c)
+  
+  c.action do |args, options|
+    options = Hyde.configuration(options.__hash__)
+    Hyde::Commands::Build.process(options)
+  end
+end
+
+command :serve do |c|
+  c.syntax = 'hyde serve [options]'
+  c.description = 'Serve your site locally'
+
+  add_build_options(c)
+
+  c.option '-B', '--detach', 'Run the server in the background (detach)'
+  c.option '-P', '--port [PORT]', 'Port to listen on'
+  c.option '-H', '--host [HOST]', 'Host to bind to'
+  c.option '-b', '--baseurl [URL]', 'Base URL'
+
+  c.action do |args, options|
+    options.default :serving => true
+
+    options = Hyde.configuration(options.__hash__)
+    Hyde::Commands::Build.process(options)
+    Hyde::Commands::Serve.process(options)
+  end
+end
+alias_command :server, :serve
