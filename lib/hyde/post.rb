@@ -1,12 +1,24 @@
 module Hyde
   
   class Post < Page
+    def index?
+      name.match(/index(\.[^\.]+)?/)
+    end
+    
     def dest_filename
-      "#{time.strftime('%Y-%m-%d')}-#{name}"
+      if index?
+        name
+      else
+        "#{time.strftime('%Y-%m-%d')}-#{name}"
+      end
     end
     
     def dest_dir
-      File.join(super, '_posts')
+      if index?
+        super
+      else
+        File.join(super, '_posts')
+      end
     end
   end
   

@@ -2,6 +2,7 @@
 
 ### Minor Enhancements
   * change in template now also triggers jekyll rebuild
+  * a post called index.ext is now not added to the _posts but as index for the category
 
 ## 0.2.0 / 2014-01-08
 
