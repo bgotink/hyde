@@ -32,9 +32,8 @@ module Hyde
       def self.watch(site, options)
         require 'listen'
         
-        # TODO check whether dest is in source?
-        
         source = options['source']
+        template = options['template']['directory']
 
         ignored = Array.new
         %w[intermediary destination].each do |o|
@@ -54,7 +53,7 @@ module Hyde
         
         Hyde.logger.info 'Auto-regeneration:', 'enabled'
         
-        listener = Listen::Listener.new(source, :ignore => ignored) do |modified, added, removed|
+        listener = Listen::Listener.new([source, template], :ignore => ignored) do |modified, added, removed|
           t = Time.now.strftime("%Y-%m-%d %H:%M:%S")
           n = modified.length + added.length + removed.length
           Hyde.logger.info "Regenerating:", "#{n} files at #{t} "

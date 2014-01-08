@@ -21,6 +21,7 @@ module Hyde
     
     def process
       self.reset
+      self.copy_template
       self.directories
       self.read
       self.write
@@ -48,7 +49,7 @@ module Hyde
       clone_directory(options['template']) if options['template']['branch']
       
       FileUtils.rm_rf(dest)
-      FileUtils.cp_r(template, dest, :preserve => true)
+      FileUtils.mkdir_p(dest)
     end
       
     private
@@ -119,6 +120,10 @@ module Hyde
     end
     
     public
+    
+    def copy_template
+      FileUtils.cp_r(Dir[File.join(template, '*')], dest, :preserve => true)
+    end
     
     # read files
     def read
