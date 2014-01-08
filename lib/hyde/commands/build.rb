@@ -7,8 +7,41 @@ module Hyde
         
         options['watching'] = true if options['watch']
         
+        self.clone_template(options) if options['jekyll-branch']
+        
+        site.setup
+        
         self.build(site, options)
         self.watch(site, options) if options['watch']
+      end
+      
+      def self.clone_template(options)
+        jekyll = options['jekyll']
+        branch = options['jekyll-branch']
+        
+        unless File.directory?('.git')
+          Hyde.logger.abort_with "Not a git repo:", "The current directory is not a git repository."
+        end
+        
+        if File.exists?(jekyll)
+          if File.directory?(jekyll)
+            # if git: cd && git pull
+            if File.directory?(File.join(jekyll, '.git'))
+              Hyde.logger.info 'Updating template:', "Updating template in #{jekyll}..."
+              `cd #{jekyll} && git pull`
+              Hyde.logger.info '', 'done'
+            else
+              Hyde.logger.warn 'Expected git repo:', "Expected #{jekyll} to be a git repo"
+              Hyde.logger.warn '', 'as a branch was supplied to pull from.'
+            end
+          else
+            Hyde.logger.abort_with 'Expected directory:', "Expected #{jekyll} to be a directory containing a jekyll template, but found file"
+          end
+        else
+          Hyde.logger.info 'Cloning template:', "Cloning branch #{branch} into #{jekyll}..."
+          `git new-workdir . #{jekyll} #{branch}`
+          Hyde.logger.info '', 'done.'
+        end
       end
       
       def self.build(site, options)

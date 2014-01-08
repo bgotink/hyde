@@ -14,7 +14,6 @@ module Hyde
       self.dest = File.expand_path(options['jekyll-out'])
       
       self.reset
-      self.setup
     end
     
     def process

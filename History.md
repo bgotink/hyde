@@ -3,11 +3,12 @@
 ### Major Enhancements
   * moved from `map` to `pages` and `posts` in `_config.yml`
   * allow files to be included in `pages` and `posts` directly instead of requiring directories
+  * automatically checkout jekyll template from different branch while building
 
 ### Minor Enhancements
   * fixed rake release
 
-## 0.1.0 / 2014-01-07
+## 0.1.0 / 2014-01-08
 
 ### Major Enhancements
   * copied and modified gemspec, rakefile etc. from [jekyll](//github.com/jekyll/jekyll)
