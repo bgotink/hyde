@@ -1,5 +1,9 @@
 ## HEAD
 
+### Major Enhancements
+  * moved from `map` to `pages` and `posts` in `_config.yml`
+  * allow files to be included in `pages` and `posts` directly instead of requiring directories
+
 ### Minor Enhancements
   * fixed rake release
 

@@ -1,15 +1,17 @@
 module Hyde
   
   class Site
-    attr_accessor :config, :map, :source, :jekyll_source, :dest, :time, :files
+    attr_accessor :options, :pages, :posts, :source, :jekyll_source, :dest, :time, :files
     
-    def initialize(config)
-      self.config = config
+    def initialize(options)
+      self.options = options
       
-      self.map = config['map'] || {}
-      self.source = File.expand_path(config['source'])
-      self.jekyll_source = File.expand_path(config['jekyll'])
-      self.dest = File.expand_path(config['jekyll-out'])
+      self.pages = options['pages']
+      self.posts = options['posts']
+
+      self.source = File.expand_path(options['source'])
+      self.jekyll_source = File.expand_path(options['jekyll'])
+      self.dest = File.expand_path(options['jekyll-out'])
       
       self.reset
       self.setup
@@ -26,8 +28,8 @@ module Hyde
     
     # reset the time
     def reset
-      self.time = if self.config['time']
-                    Time.parse(self.config['time'].to_s)
+      self.time = if options['time']
+                    Time.parse(options['time'].to_s)
                   else
                     Time.now
                   end
@@ -41,48 +43,69 @@ module Hyde
     
     # create the Hyde-to-Jekyll output directories
     def directories
-      self.map.each do |source_d, dest_d|
-        source = File.join(self.source, source_d)
-        if File.exists?(source)
-          dest = File.join(self.dest, dest_d)
-          if File.exists?(dest)
-            Hyde.logger.abort_with 'Illegal file:' "Expected destination file #{dest_d}/_posts to be a directory but found a file" unless File.directory?(dest)
-            Hyde.logger.warn 'Destination exists:', "Destination directory #{dest_d} exists, deleting content" unless self.config['watching']
-            
-            Dir[File.join(dest, '*')].each do |f|
-              FileUtils.rm_rf(f)
-            end
-          else
-            FileUtils.mkdir_p(dest)
+      directories_helper(pages)
+      directories_helper(posts, '_posts')
+    end
+    
+    private
+    
+    def directories_helper(data, dest_suffix = '')
+      data.each do |source, dest|
+        source = File.join(self.source, source)
+        dest = File.join(self.dest, dest, dest_suffix)
+
+        unless File.exists?(source)
+          Hyde.logger.warn 'File not found:', "File/directory #{source} does not exist, skipping"
+          return
+        end
+
+        if File.exists?(dest)
+          unless File.directory?(source) == File.directory?(dest)
+            Hyde.logger.abort_with 'Illegal file:', "Expected #{dest} to be a #{File.directory?(source) ? 'directory but found file.' : 'file but found directory.'}" 
           end
-        else
-          Hyde.logger.warn 'File not found:', "Directory #{source_d} does not exist, skipping directory"
+
+          FileUtils.rm_rf(dest)
+        end
+
+        # if directory: create directory, otherwise nop
+        if File.directory?(source)
+          FileUtils.mkdir_p(dest)
         end
       end
     end
     
+    public
+    
     # read files
     def read
-      self.files ||= Hash.new
-      self.map.each do |source_d, dest_d|
-        files = Hash.new
-        Hyde.logger.error 'Duplicate source:', "directory \"#{source_d}\"" if self.files[source_d]
-        self.files[source_d] = files
-        
-        read_directory(source_d, files, File.join(self.dest, dest_d))
+      self.files ||= Array.new
+      
+      read_files(pages) do | source, destination |
+        files << Page.new(source, File.join(self.dest, destination))
+      end
+      read_files(posts) do | source, destination |
+        files << Post.new(source, File.join(self.dest, destination))
       end
     end
     
     private
     
-    def read_directory(directory, data, destination)
-      Dir[File.join(directory, '*')].sort.each do |file|
-        if File.directory?(file)
-          fdata = Hash.new
-          read_directory(file, fdata, destination)
-          data[File.basename(file)] = fdata
+    def read_files(files)
+      files.each do | source, destination |
+        if File.directory?(source)
+          read_directory(source, destination) { |s,d| yield(s,d) }
         else
-          data[File.basename(file)] = JekyllFile.new(file, destination)
+          yield(source, destination)
+        end
+      end
+    end
+    
+    def read_directory(directory, destination)
+      Dir[File.join(directory, '*')].sort.each do |source|
+        if File.directory?(source)
+          read_directory(source, destination) { |s,d| yield(s,d) }
+        else
+          yield(source, destination)
         end
       end
     end
@@ -91,29 +114,15 @@ module Hyde
     
     # write jekyll files
     def write
-      self.files.each do |name, files|
-        write_recursive(files, File.join(self.dest, self.map[name]))
+      files.each do |file|
+        file.write
       end
     end
-    
-    private
-    
-    def write_recursive(files, directory)
-      files.each do |name, file|
-        if file.is_a?(JekyllFile)
-          file.write
-        else
-          write_recursive(file, directory)
-        end
-      end
-    end
-    
-    public
     
     # cleanup
     def cleanup
       self.files = Hash.new
-      FileUtils.rm_rf(self.dest) unless self.config['keep'] or self.config['watching']
+      FileUtils.rm_rf(self.dest) unless options['keep'] or options['watching']
     end
     
     # runs Jekyll
@@ -121,7 +130,7 @@ module Hyde
       jekyll_options = Hash.new
       
       %w[safe destination verbose].each do |c|
-        jekyll_options[c] = self.config[c] if self.config[c]
+        jekyll_options[c] = options[c] if options[c]
       end
 
       jekyll_options['source'] = self.dest

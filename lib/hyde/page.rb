@@ -1,26 +1,38 @@
 module Hyde
   
-  class JekyllFile
-    attr_accessor :original, :destination
+  class Page
+    attr_accessor :original, :name, :time
     
     def initialize(location, destination)
-      self.original = File.absolute_path(location)
+      @original = File.absolute_path(location)
+      @dest_dir = destination
+      
       data = read_yaml(self.original)
     
-      name = File.basename(location)
-      time = if data['hyde_date']
-               Time.parse(data['hyde_date'])
-             else 
-               File.mtime(location)
-             end
+      @name = File.basename(location)
+      @time = if data['hyde_date']
+                Time.parse(data['hyde_date'])
+              elsif data['date']
+                Time.parse(data['date'])
+              else 
+                File.mtime(location)
+              end
+    end
     
-      dest_file_name = "#{time.strftime('%Y-%m-%d')}-#{name}"
+    def dest_filename
+      name
+    end
     
-      self.destination = File.join(destination, dest_file_name)
+    def dest_dir
+      @dest_dir
+    end
+    
+    def destination
+      File.join(dest_dir, dest_filename)
     end
   
     def write
-      File.symlink(self.original, self.destination)
+      File.symlink(original, destination)
     end
     
     private

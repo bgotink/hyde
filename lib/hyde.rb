@@ -10,7 +10,8 @@ def require_all(directory)
 end
 
 require 'hyde/configuration'
-require 'hyde/jekyllfile'
+require 'hyde/page'
+require 'hyde/post'
 require 'hyde/site'
 require 'hyde/command'
 require 'hyde/stevenson'

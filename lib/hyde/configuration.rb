@@ -14,6 +14,9 @@ module Hyde
       'safe' => false,
       'detach' => false,
       
+      'pages' => Hash.new,
+      'posts' => Hash.new,
+      
       'port'          => Jekyll::Configuration::DEFAULTS['port'],
       'host'          => Jekyll::Configuration::DEFAULTS['host']
     }
