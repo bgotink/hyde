@@ -44,8 +44,8 @@ module Hyde
   def self.jekyll_configuration(configuration)
     config = Jekyll::Configuration[Jekyll::Configuration::DEFAULTS]
     override = Jekyll::Configuration[{
-      'source' => configuration['jekyll-out'],
-      'destination' => configuration['destination']
+      'source' => configuration['intermediary']['directory'],
+      'destination' => configuration['destination']['directory']
     }].stringify_keys
     config = config.read_config_files(config.config_files(override))
     

@@ -1,7 +1,9 @@
 module Hyde
   
   class Site
-    attr_accessor :options, :pages, :posts, :source, :jekyll_source, :dest, :time, :files
+    attr_accessor :options, :pages, :posts
+    attr_accessor :source, :template, :dest
+    attr_accessor :time, :files
     
     def initialize(options)
       self.options = options
@@ -10,10 +12,11 @@ module Hyde
       self.posts = options['posts']
 
       self.source = File.expand_path(options['source'])
-      self.jekyll_source = File.expand_path(options['jekyll'])
-      self.dest = File.expand_path(options['jekyll-out'])
+      self.template = File.expand_path(options['template']['directory'])
+      self.dest = File.expand_path(options['intermediary']['directory'])
       
       self.reset
+      self.setup
     end
     
     def process
@@ -36,9 +39,51 @@ module Hyde
     
     # copy Jekyll source files
     def setup
-      FileUtils.rm_rf(self.dest)
-      FileUtils.cp_r(self.jekyll_source, self.dest, :preserve => true)
+      if options['destination']['branch']
+        clone_directory(options['destination'])
+      else
+        FileUtils.rm_rf(dest)
+      end
+      
+      clone_directory(options['template']) if options['template']['branch']
+      
+      FileUtils.rm_rf(dest)
+      FileUtils.cp_r(template, dest, :preserve => true)
     end
+      
+    private
+    
+    def clone_directory(options)
+      directory = options['directory']
+      branch = options['branch']
+      update = (options['update'] == true || options['update'] == 'true')
+      
+      unless File.directory?('.git')
+        Hyde.logger.abort_with "Not a git repo:", "The current directory is not a git repository."
+      end
+      
+      if File.exists?(directory)
+        if File.directory?(directory)
+          # if git: cd && git pull
+          if File.directory?(File.join(directory, '.git')) and update
+            Hyde.logger.info 'Updating directory:', "Pulling branch #{branch} in #{directory}..."
+            `cd #{directory} && git pull`
+            Hyde.logger.info '', 'done'
+          elsif update
+            Hyde.logger.warn 'Expected git repo:', "Expected #{directory} to be a git repo"
+            Hyde.logger.warn '', 'as a branch was supplied to pull from.'
+          end
+        else
+          Hyde.logger.abort_with 'Expected directory:', "#{directory} but found file"
+        end
+      else
+        Hyde.logger.info 'Cloning template:', "Cloning branch #{branch} into #{directory}..."
+        `git new-workdir . #{directory} #{branch}`
+        Hyde.logger.info '', 'done.'
+      end
+    end
+    
+    public
     
     # create the Hyde-to-Jekyll output directories
     def directories
@@ -120,18 +165,19 @@ module Hyde
     
     # cleanup
     def cleanup
-      self.files = Hash.new
-      FileUtils.rm_rf(self.dest) unless options['keep'] or options['watching']
+      self.files = Array.new
+      FileUtils.rm_rf(self.dest) unless options['keep'] or options['watching'] or options['serving']
     end
     
     # runs Jekyll
     def build
       jekyll_options = Hash.new
       
-      %w[safe destination verbose].each do |c|
+      %w[safe verbose].each do |c|
         jekyll_options[c] = options[c] if options[c]
       end
 
+      jekyll_options['destination'] = options['destination']['directory']
       jekyll_options['source'] = self.dest
 
       jekyll_options = Jekyll::configuration(jekyll_options)

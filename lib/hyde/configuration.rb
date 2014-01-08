@@ -3,9 +3,18 @@ module Hyde
     
     DEFAULTS = {
       'source' => Dir.pwd,
-      'jekyll' => File.join(Dir.pwd, '_jekyll'),
-      'jekyll-out' => File.join(Dir.pwd, '_jekyll-out'),
-      'destination' => File.join(Dir.pwd, '_site'),
+      'template' => {
+        'directory' => File.join(Dir.pwd, '_template'),
+        'branch' => nil,
+        'update' => true
+      },
+      'intermediary' => {
+        'directory' => File.join(Dir.pwd, '_intermediary')
+      },
+      'destination' => {
+        'directory' => File.join(Dir.pwd, '_site'),
+        'branch' => nil
+      },
       
       'keep' => false,
       
