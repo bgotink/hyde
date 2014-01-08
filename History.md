@@ -4,8 +4,9 @@
   * moved from `map` to `pages` and `posts` in `_config.yml`
   * allow files to be included in `pages` and `posts` directly instead of requiring directories
   * automatically checkout jekyll template from different branch while building
-
-### Minor Enhancements
+  * also allow destination to be a git branch
+  
+### Bugfixes
   * fixed rake release
 
 ## 0.1.0 / 2014-01-08
