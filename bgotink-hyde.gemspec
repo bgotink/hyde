@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = '1.3.5'
 
   s.name              = 'bgotink-hyde'
-  s.version           = '0.1.0'
+  s.version           = '0.2.0'
   s.license           = 'MIT'
   s.date              = '2014-01-08'
   s.rubyforge_project = 'bgotink-hyde'
@@ -59,7 +59,8 @@ Gem::Specification.new do |s|
     lib/hyde/commands/build.rb
     lib/hyde/commands/serve.rb
     lib/hyde/configuration.rb
-    lib/hyde/jekyllfile.rb
+    lib/hyde/page.rb
+    lib/hyde/post.rb
     lib/hyde/site.rb
     lib/hyde/stevenson.rb
   ]

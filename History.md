@@ -1,4 +1,4 @@
-## HEAD
+## 0.2.0 / 2014-01-08
 
 ### Major Enhancements
   * moved from `map` to `pages` and `posts` in `_config.yml`
