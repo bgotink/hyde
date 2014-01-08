@@ -32,7 +32,7 @@ module Hyde
     end
   
     def write
-      File.symlink(original, destination)
+      FileUtils.cp(original, destination)
     end
     
     private

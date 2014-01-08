@@ -4,6 +4,9 @@
   * change in template now also triggers jekyll rebuild
   * a post called index.ext is now not added to the _posts but as index for the category
 
+### Bugfixes
+  * index.ext can now also be updated using --watch
+
 ## 0.2.0 / 2014-01-08
 
 ### Major Enhancements
