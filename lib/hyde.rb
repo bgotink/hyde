@@ -18,7 +18,7 @@ require 'hyde/stevenson'
 require_all 'hyde/commands'
 
 module Hyde
-  VERSION = '0.1'
+  VERSION = '0.1.0'
 
   # Public: Generate a Hyde configuration Hash by merging the default
   # options with anything in _config.yml, and adding the given options on top.

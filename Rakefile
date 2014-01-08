@@ -13,11 +13,15 @@ $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), *%w[lib]))
 #############################################################################
 
 def name
-  rubyforge_project.split('-').last
+  rubyforge_project
+end
+
+def main_file
+  Dir['lib/*.rb'].first
 end
 
 def version
-  line = File.read("lib/#{name}.rb")[/^\s*VERSION\s*=\s*.*/]
+  line = File.read(main_file)[/^\s*VERSION\s*=\s*.*/]
   line.match(/.*VERSION\s*=\s*['"](.*)['"]/)[1]
 end
 
@@ -38,7 +42,7 @@ def gemspec_file
 end
 
 def gem_file
-  "#{name}-#{version}.gem"
+  "#{rubyforge_project}-#{version}.gem"
 end
 
 def replace_header(head, header_name)
@@ -125,7 +129,7 @@ end
 
 desc "Open an irb session preloaded with this library"
 task :console do
-  sh "irb -rubygems -r ./lib/#{name}.rb"
+  sh "irb -rubygems -r ./#{main_file}"
 end
 
 #############################################################################

@@ -1,5 +1,10 @@
 ## HEAD
 
+### Minor Enhancements
+  * fixed rake release
+
+## 0.1.0 / 2014-01-07
+
 ### Major Enhancements
   * copied and modified gemspec, rakefile etc. from [jekyll](//github.com/jekyll/jekyll)
   * wrote `bin/hyde` based on `jekyll` script
