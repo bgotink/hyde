@@ -1,22 +1,28 @@
 module Hyde
   
   class Page
-    attr_accessor :original, :name, :time
+    attr_accessor :original, :name
     
     def initialize(location, destination)
       @original = File.absolute_path(location)
       @dest_dir = destination
-      
-      data = read_yaml(self.original)
     
       @name = File.basename(location)
-      @time = if data['hyde_date']
-                Time.parse(data['hyde_date'])
-              elsif data['date']
-                Time.parse(data['date'])
-              else 
-                File.mtime(location)
-              end
+    end
+    
+    def data
+      read_yaml(original)
+    end
+    
+    def time
+      data = self.data
+      if data['hyde_date']
+        Time.parse(data['hyde_date'])
+      elsif data['date']
+        Time.parse(data['date'])
+      else 
+        File.mtime(original)
+      end
     end
     
     def dest_filename

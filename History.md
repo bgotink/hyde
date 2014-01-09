@@ -3,6 +3,7 @@
 ### Minor Enhancements
   * change in template now also triggers jekyll rebuild
   * a post called index.ext is now not added to the _posts but as index for the category
+  * only parse front-matter if needed (aka: if file is a post), this allows the user to enter a directory filled with images etc. as a page
 
 ### Bugfixes
   * index.ext can now also be updated using --watch
