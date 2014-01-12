@@ -141,6 +141,8 @@ module Hyde
     
     def read_files(files)
       files.each do | source, destination |
+        source = File.join(self.source, source)
+        
         if File.directory?(source)
           read_directory(source, destination) { |s,d| yield(s,d) }
         else

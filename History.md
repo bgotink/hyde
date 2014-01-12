@@ -1,3 +1,8 @@
+## HEAD
+
+### Bugfixes
+  * source directory wasn't taken into account when copying the files
+
 ## v0.2.1 / 2014-01-11
 
 ### Minor Enhancements
