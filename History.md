@@ -1,4 +1,4 @@
-## HEAD
+## v0.2.1 / 2014-01-11
 
 ### Minor Enhancements
   * change in template now also triggers jekyll rebuild

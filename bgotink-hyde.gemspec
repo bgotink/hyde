@@ -6,7 +6,7 @@ Gem::Specification.new do |s|
   s.name              = 'bgotink-hyde'
   s.version           = '0.2.1'
   s.license           = 'MIT'
-  s.date              = '2014-01-08'
+  s.date              = '2014-01-12'
   s.rubyforge_project = 'bgotink-hyde'
 
   s.summary     = "A user-friendly front-end for Jekyll"
