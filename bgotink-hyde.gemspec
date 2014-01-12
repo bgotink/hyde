@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.rubygems_version = '1.3.5'
 
   s.name              = 'bgotink-hyde'
-  s.version           = '0.2.0'
+  s.version           = '0.2.1'
   s.license           = 'MIT'
   s.date              = '2014-01-08'
   s.rubyforge_project = 'bgotink-hyde'
