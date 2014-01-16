@@ -1,5 +1,8 @@
 ## HEAD
 
+### Major Enhancements
+  * when watching on build/serve, a USR1 signal will trigger a rebuild
+
 ### Bugfixes
   * source directory wasn't taken into account when copying the files
 

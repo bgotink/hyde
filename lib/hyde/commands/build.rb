@@ -63,6 +63,16 @@ module Hyde
           Hyde.logger.info "", "done."
         end
         listener.start
+        
+        trap("USR1") do
+          t = Time.now.strftime("%Y-%m-%d %H:%M:%S")
+          Hyde.logger.info "Regenerating:", "received USR1 signal at #{t}"
+          
+          thread = Thread.new { site.process }
+          thread.join
+          
+          Hyde.logger.info "", "done."
+        end
 
         unless options['serving']
           trap("INT") do
